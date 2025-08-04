@@ -19,8 +19,18 @@ export default function ChatRoom({ roomId, currentUser }: Props) {
         <h2 className="text-xl font-semibold text-center text-gray-800 dark:text-gray-100">
           Welcome, {currentUser.username}
         </h2>
+
         <MessageList roomId={roomId} currentUser={currentUser} />
+
+        {/* 👤 You are typing */}
+        {isTyping && (
+          <div className="text-sm text-blue-500 text-right mr-2">You are typing...</div>
+        )}
+
+        {/* 🧑‍🤝‍🧑 Others typing */}
         <TypingIndicator roomId={roomId} currentUser={currentUser} />
+
+        {/* 📩 Input */}
         <MessageInput
           roomId={roomId}
           currentUser={currentUser}

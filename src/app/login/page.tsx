@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (session) router.push('/');
-  }, [session]);
+  }, [session, router]);
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800">
@@ -26,7 +26,7 @@ export default function LoginPage() {
           appearance={{ theme: ThemeSupa }}
           theme="dark"
           providers={['google']}
-          redirectTo={`${location.origin}/`}
+          redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/` : undefined}
         />
       </div>
     </div>

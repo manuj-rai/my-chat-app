@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import EmojiPicker from './EmojiPicker';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 type Props = {
   roomId: string;
@@ -13,7 +14,7 @@ type Props = {
 export default function MessageInput({ roomId, currentUser, onTyping }: Props) {
   const [text, setText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const [channel, setChannel] = useState<any>(null);
+  const [channel, setChannel] = useState<RealtimeChannel | null>(null);
   const typingTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function MessageInput({ roomId, currentUser, onTyping }: Props) {
           }
         }}
       />
-      <EmojiPicker onSelect={(emoji) => setText((prev) => prev + emoji)} />
+      <EmojiPicker onSelect={(emoji: string) => setText((prev) => prev + emoji)} />
       <button
         className="bg-blue-600 text-white px-4 py-2 rounded"
         onClick={() => {

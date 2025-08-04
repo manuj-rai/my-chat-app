@@ -3,36 +3,47 @@
 import { useEffect, useRef, useState } from "react";
 import data from "@emoji-mart/data";
 
-export default function EmojiPicker({ onSelect }: { onSelect: (emoji: string) => void }) {
+type Props = {
+  onSelect: (emoji: string) => void;
+};
+
+export default function EmojiPicker({ onSelect }: Props) {
   const [show, setShow] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!show || !pickerRef.current) return;
 
-    // Clear previous picker if it exists
     pickerRef.current.innerHTML = "";
 
-    // Dynamically load emoji-mart picker
-    import("emoji-mart").then((module: any) => {
+    import("emoji-mart").then((module) => {
       const Picker = module.Picker;
-      const picker = new Picker({
-        parent: pickerRef.current,
+      new Picker({
+        parent: pickerRef.current!,
         data,
         theme: "light",
-        onEmojiSelect: (emoji: any) => {
+        onEmojiSelect: (emoji: { native: string }) => {
           onSelect(emoji.native);
           setShow(false);
         },
       });
     });
-  }, [show]);
+  }, [show, onSelect]);
 
   return (
     <div className="relative">
-      <button onClick={() => setShow(!show)}>😊</button>
+      <button
+        type="button"
+        onClick={() => setShow((prev) => !prev)}
+        className="text-xl"
+      >
+        😊
+      </button>
       {show && (
-        <div ref={pickerRef} className="absolute z-50 bg-white border rounded shadow" />
+        <div
+          ref={pickerRef}
+          className="absolute right-0 z-50 bg-white border rounded shadow"
+        />
       )}
     </div>
   );

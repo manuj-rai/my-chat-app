@@ -8,6 +8,11 @@ type Props = {
   currentUser: { id: string; username: string };
 };
 
+type PresenceMeta = {
+  username: string;
+  typing: boolean;
+};
+
 export default function TypingIndicator({ roomId, currentUser }: Props) {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
@@ -20,11 +25,17 @@ export default function TypingIndicator({ roomId, currentUser }: Props) {
 
     channel
       .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        const others = Object.entries(state)
+        const state = channel.presenceState() as Record<string, PresenceMeta[]>;
+
+        const othersTyping = Object.entries(state)
           .filter(([userId]) => userId !== currentUser.id)
-          .flatMap(([_, presences]: any) => presences.map((p: any) => p.username));
-        setTypingUsers(others);
+          .flatMap(([, presences]) =>
+            presences
+              .filter((p) => p.typing)
+              .map((p) => p.username)
+          );
+
+        setTypingUsers(othersTyping);
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -35,7 +46,7 @@ export default function TypingIndicator({ roomId, currentUser }: Props) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [roomId, currentUser]);
+  }, [roomId, currentUser.id, currentUser.username]);
 
   return (
     <div className="text-sm text-gray-500 h-5 min-h-[1rem]">
